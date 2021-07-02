@@ -14,8 +14,8 @@ const listenServer = function () {
 }
 
 async function main () {
-  await dbConnect()
-  await listenServer()
+    await dbConnect()
+    await listenServer()
 }
 
 main()
