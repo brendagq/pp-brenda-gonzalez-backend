@@ -2,7 +2,7 @@
 const mongoose = require('mongoose')
 
 
-const UserSchema = new mongoose.Schema({
+const UserSchema = mongoose.Schema({
     name: {
         type: String,
         required: [true, 'El nombre es un campo requerido'],
@@ -54,10 +54,10 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: [true, 'El pasatiempo es un campo requerido']
     },
-    dateCreated: {
-        type: Date,
-        default: new Date()
-    }
-})
+},
+{
+    timestamps: true
+}
+)
 
 module.exports = mongoose.model('User', UserSchema)

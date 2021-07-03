@@ -1,23 +1,33 @@
 
 const router = require('express').Router()
-const User = require('../models/User')
+const user = require('../usecases/user')
 
-router.post('/register', async (req,res) =>{
-    const user = new User({
-        name: req.body.name,
-        email: req.body.email ,
-        telephone: req.body.telephone,
-        password: req.body.password ,
-        age: req.body.age,
-        gender: req.body.gender,
-        hobbie: req.body.hobbie
-    })
-    try{
-        const savedUser = await user.save()
-        res.send(savedUser)
 
-    }catch(error){
-        res.status(400).send(error)
+//Public Routes
+
+router.post('/register', async ( request, response ) =>{
+    try {
+        const newUser = await user.createNewUser(request.body)
+        await newUser.save()
+
+        response.json({
+            status: 200,
+            success: true,
+            message: "Usuario registrado exitosamente",
+            data:{
+                user: newUser
+            }
+
+        })     
+    } catch (error) {
+        response.json({
+            status: 400,
+            success: false,
+            message: 'El registro no pudo completarse',
+            data: {
+                error: error.message
+            }
+        })
     }
 })
 
@@ -25,12 +35,17 @@ router.post('/login', (req,res) =>{
     res.send("Inicio de sesión")
 })
 
-router.get('/personal_info', (req,res) =>{
+
+
+
+//Private Routes
+
+/*router.get('/personal_info', (req,res) =>{
     res.send("Información personal")
 })
 
 router.get('/user_search', (req,res) =>{
     res.send("Otros usuarios")
-})
+}) */
 
 module.exports = router
