@@ -44,7 +44,6 @@ router.post('/login', async ( request,response ) =>{
             data:{
                 token
             }
-
         }) 
     } catch (error) {
         response.json({
@@ -62,9 +61,18 @@ router.post('/login', async ( request,response ) =>{
 
 //Private Routes
 
-router.get('/personal_info', authRoute, async (request,response) =>{
+router.get('/detail/:id', authRoute, async (request,response) =>{
     try {
-        response.send(request.user)       
+        const userData = await user.getUserDetail( request.params.id )
+
+        response.json({
+            status: 200,
+            success: true,
+            message: 'Detalle del usuario',
+            data: {
+                user: userData
+            }
+        })        
     } catch (error) {
         response.json({
             status: 400,
@@ -77,8 +85,54 @@ router.get('/personal_info', authRoute, async (request,response) =>{
     }
 })
 
-router.get('/user_search', (req,res) =>{
-    res.send("Otros usuarios")
+router.get('/search', authRoute, async (request,response) =>{
+    try {
+        
+        const users = await user.getUsersList( request.query.name, request.query.hobbie )
+        
+        response.json({
+            status: 200,
+            success: true,
+            message: 'Lista de usuarios',
+            data: {
+                users
+            }
+        }) 
+
+    } catch (error) {
+        response.json({
+            status: 400,
+            success: false,
+            message: error.message,
+            data: {
+                error: error.message
+            }
+        })
+    }
+})
+
+router.delete('/:id', authRoute, async (request,response) =>{ 
+    try {
+        const deletedUser = await user.deleteUser( request.params.id )
+
+        response.json({
+            status: 200,
+            success: true,
+            message: 'El usuario fue eliminado con éxito',
+            data: {
+                user: deletedUser
+            }
+        })    
+    } catch (error) {
+        response.json({
+            status: 400,
+            success: false,
+            message: error.message,
+            data: {
+                error: error.message
+            }
+        })
+    }
 })
 
 module.exports = router
