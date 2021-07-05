@@ -61,18 +61,20 @@ router.post('/login', async ( request,response ) =>{
 
 //Private Routes
 
-router.get('/detail/:id', authRoute, async (request,response) =>{
+router.get('/advanced_search', authRoute, async (request,response) =>{
     try {
-        const userData = await user.getUserDetail( request.params.id )
-
+        
+        const users = await user.getUsersFiltered()
+        
         response.json({
             status: 200,
             success: true,
-            message: 'Detalle del usuario',
+            message: 'Lista de usuarios',
             data: {
-                user: userData
+                users
             }
-        })        
+        }) 
+
     } catch (error) {
         response.json({
             status: 400,
@@ -99,6 +101,30 @@ router.get('/search', authRoute, async (request,response) =>{
             }
         }) 
 
+    } catch (error) {
+        response.json({
+            status: 400,
+            success: false,
+            message: error.message,
+            data: {
+                error: error.message
+            }
+        })
+    }
+})
+
+router.get('/:id', authRoute, async (request,response) =>{
+    try {
+        const userData = await user.getUserDetail( request.params.id )
+
+        response.json({
+            status: 200,
+            success: true,
+            message: 'Detalle del usuario',
+            data: {
+                user: userData
+            }
+        })        
     } catch (error) {
         response.json({
             status: 400,

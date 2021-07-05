@@ -2,6 +2,7 @@
 const bcrypt = require('../lib/bcrypt')
 const jwt = require('../lib/jwt')
 const User = require('../models/UserModel')
+const moment = require('moment')
 
 async function createNewUser({ name, email, telephone, password, age, gender, hobbie }) {
 
@@ -53,12 +54,48 @@ async function getUserDetail( id ) {
 
 }
 
+async function getUsersFiltered( ) {
+
+    const lastThreeDays = new Date( moment().subtract(3, 'days') )
+    
+    const users = await User.aggregate([
+       { 
+            $match:{
+                age:{ $gt:18 }, 
+                gender:1 ,
+                createdAt:{
+                    $gte: lastThreeDays,
+                }
+            }
+
+        },
+        {
+            $group:{
+                _id:"$hobbie",
+                users:{
+                    $push:{   
+                        name : "$name", 
+                        telephone: "$telephone", 
+                        hobbie: "$hobbie" 
+                    }
+                }
+            }
+        }
+        
+    ])
+   
+    return users
+}
+
 async function deleteUser( id ) {
 
     const deletedUser = await User.findOneAndDelete({ _id: id }, { password: 0 })
     if( !deletedUser ) throw new Error('El usuario no fue encontrado')
 
-    return  deletedUser
+    return  {
+        name: deletedUser.name,
+        email: deletedUser.email
+    }
 
 }
 
@@ -69,5 +106,6 @@ module.exports = {
     loginUser,
     getUsersList,
     getUserDetail,
+    getUsersFiltered,
     deleteUser
 }
