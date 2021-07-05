@@ -55,7 +55,7 @@ async function getUserDetail( id ) {
 
 async function deleteUser( id ) {
 
-    const deletedUser = await User.findOneAndDelete({ _id: id }, { password: 0 }).xcccccc
+    const deletedUser = await User.findOneAndDelete({ _id: id }, { password: 0 })
     if( !deletedUser ) throw new Error('El usuario no fue encontrado')
 
     return  deletedUser
